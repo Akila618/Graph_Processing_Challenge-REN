@@ -5,8 +5,6 @@ Coding challenge that implements a small utility to process a directed graph rep
 
 ---
 
-# Ren Interview: Graph Processing Challenge
-
 This is a coding challenge for systems engineering candidates at Ren.
 
 It involves implementing a small utility to process a directed graph represented as an adjacency list, and compute several structural and algorithmic properties from it.
@@ -299,9 +297,3 @@ For the test cases, a `graph<N>_output.txt` file is included. Your output must m
 - Ensure your CLI accepts exactly one argument: the path to the input file.
 
 
-## Submitting Your Solution
-
-- Create a new private GitHub repository for your solution on your GitHub profile.
-- As mentioned at the beginning of the specification, include any dependency files (`requirements.txt`, etc.), including them in the `graph_solution` executable as necessary.
-- Your solution must be executable on a *nix system.
-- When you're done, add `rukmal`, `janithpet`, and `maxwellb2` to your repository as collaborators, and respond to the HR email with the link to your repository.
