@@ -2,13 +2,26 @@ use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct Graph{
-    pub graph: HashMap<i32, Vec<i32>>
+    pub map: HashMap<i32, Vec<i32>>
 }
 
 impl Graph {
     pub fn new()->Self{
         Graph {
-            graph: HashMap::new()
+            map: HashMap::new()
         }
     }
 }
+
+// #[derive(Debug, Clone)]
+// pub struct Vector{
+//     pub vec: Vec<i32>
+// }
+
+// impl Vector {
+//     pub fn new()->Self{
+//         Vector   {
+//             vec: Vec::new()
+//         }
+//     }
+// }

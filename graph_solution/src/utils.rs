@@ -29,3 +29,4 @@ pub fn read_csv() -> Result<Vec<Vec<i32>>, Box<dyn Error>> {
     println!("retrieved csv successfully!");
     Ok(csv_results)
 }
+
