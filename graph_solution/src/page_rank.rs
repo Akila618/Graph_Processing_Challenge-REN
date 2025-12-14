@@ -30,7 +30,7 @@ pub fn create_transition_matrix(graph: &Graph) -> CsMat<f64>{
     
     let mut all_nodes: HashSet<i32> = HashSet::new();
     
-    // Add all source nodes (keys)
+    // add all source keys
     for &key in graph.map.keys() {
         all_nodes.insert(key);
     }
@@ -53,8 +53,10 @@ pub fn create_transition_matrix(graph: &Graph) -> CsMat<f64>{
 
     // map nodes to indices
     for &node in &all_nodes {
+
         key_index_map.insert(node, index);
         index += 1;
+
     }
     
     for (selected_node, target_nodes) in &graph.map {
@@ -116,64 +118,67 @@ pub fn create_transition_matrix(graph: &Graph) -> CsMat<f64>{
 
 
 // ==============================calculate page rank==========================================
-pub fn calculate_pagerank(tr_matrix: CsMat<f64>, damping_factor: f64, max_iterations: usize) -> PageRank {
-    
+pub fn calculate_pagerank(tr_matrix: CsMat<f64>, damping_factor: f64, total_iterations: usize) -> PageRank {
+
     /*
-    Rank of page i = (1 - d) + d * sum of (Rank of page j / outdegree of page j)
-    d is the damping factor = 0.85
+    R(i) = (1 - d) / N + d * (sum of (rank of in degree nodes)/(out degree of in degree nodes))
+    also 
+    R(i) = (1 - d)E(teleport_vector) + d * (M * Ri); M = transition matrix, Ri = rank vector at iteration i
     */
 
-    let tr_in_matrix = tr_matrix.transpose_view();
-    let size = tr_in_matrix.rows();
-    
-    //println!("nodes: {}", size);
+    let size = &tr_matrix.rows();
+    // R0 = 1/N
+    let initial_rank = 1.0 / *size as f64;
 
-    let initial_rank = 1.0 / size as f64;
-    let mut pagerank = vec![initial_rank; size];
-    let mut new_pagerank = vec![0.0; size];
-    
-    let initial_rank = (1.0 - damping_factor) / size as f64;
+    // E = (1 - d) / N
+    let e_value = (1.0 - damping_factor) / *size as f64; 
 
-    for _iteration in 0..max_iterations {
+    let mut pagerank_vector = vec![initial_rank; *size];
     
-        new_pagerank.fill(initial_rank);
+    let mut new_pagerank_vector = vec![0.0; *size]; 
+
+    for _counter in 0..total_iterations {
         
-        for j in 0..size {
-            let row = tr_in_matrix.outer_view(j).unwrap();
+        for i in 0..*size {
+            new_pagerank_vector[i] = e_value;
+        } 
+        
+        for i in 0..*size {
             
-            for (i, &prob) in row.iter() {
-                // Apply the page rank formula: (1-d) + d * (prob * rank[j])
-                let m = pagerank[j] * prob;
-                new_pagerank[i] += damping_factor * m;
+            // outer_view is optimum than using 2 inner loops
+            let row = tr_matrix.outer_view(i).expect("error geeting row");
+              
+            let calculation = damping_factor * pagerank_vector[i];
+            
+            for (j, &probability) in row.iter() {
+                new_pagerank_vector[j] += calculation * probability;
             }
         }
 
-        pagerank.copy_from_slice(&new_pagerank);
+        for i in 0..*size {
+            pagerank_vector[i] = new_pagerank_vector[i];
+        }
     }
 
-    // Find the min and max page rank values
     let mut min_value = 0.0;
     let mut max_value = 0.0;
 
-    for &value in &pagerank {
+    for &value in &pagerank_vector {
+
         if min_value == 0.0 || value < min_value {
             min_value = value;
         }
+
         if max_value == 0.0 || value > max_value {
             max_value = value;
         }
+
     }
 
-    
-    
-    println!("PageRank calculation completed!");
-
     PageRank {
-        //round to 6 decimal places
         min_value: (min_value * 1_000_000.0).round() / 1_000_000.0,
         max_value: (max_value * 1_000_000.0).round() / 1_000_000.0,
     }
-   
 }
 
 // TEST -------------------------------------------------------------------------------------
@@ -184,10 +189,10 @@ mod tests {
     #[test]
     fn page_rank() {
         let matrix = CsMat::new(
-            (3, 3),
-            vec![0, 2, 4, 6],
-            vec![0, 1, 0, 2, 1, 2],
-            vec![0.5, 0.5, 1.0, 0.0, 0.5, 0.5],
+            (3, 3), 
+            vec![0, 1, 2, 3],
+            vec![1, 2, 1],
+            vec![1.0, 1.0, 1.0],
         );
         let pagerank = calculate_pagerank(matrix, 0.85, 100);
         assert!(pagerank.min_value > 0.0);

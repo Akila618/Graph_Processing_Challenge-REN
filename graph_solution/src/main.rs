@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use csv::Error;
+use sprs::stack;
 mod utils;
 mod page_rank;
 
@@ -41,6 +42,7 @@ if node is visiting (1) return false : a cycle
 if node is non-visited (0) push it to stack
 */
 
+
 //=============================check cycles =======================================
 pub fn is_dag(graph: &Graph) -> bool {
     // 0 = unvisited, 1 = visiting, 2 = visited
@@ -51,6 +53,7 @@ pub fn is_dag(graph: &Graph) -> bool {
     for &start_key in graph.map.keys() {
 
         if node_state.get(&start_key).unwrap_or(&0) != &0 {
+
             continue;
         }
         else{
@@ -71,12 +74,14 @@ pub fn is_dag(graph: &Graph) -> bool {
                 
                 node_state.insert(current_key, 1);
 
-                stack.push(current_key);
+                stack.push(current_key);  
                 
                 if let Some(neighbors) = graph.map.get(&current_key) {
 
                     for &neighbor in neighbors {
+                        
                         let neighbor_state = node_state.get(&neighbor).unwrap_or(&0).clone();
+
                         if neighbor_state == 1 {
                             return false; 
                         }
@@ -100,7 +105,9 @@ pub fn is_dag(graph: &Graph) -> bool {
 pub fn calculate_outdegree(graph: &Graph)-> i32{
     let mut max_outdegree:i32 = 0;
     for (_key, value) in &graph.map{
+
         let outdegree:i32 = value.len() as i32;
+        
         if outdegree > max_outdegree{
             max_outdegree = outdegree;
         }
@@ -160,14 +167,13 @@ fn main() {
 
     //read the given csv file
     let csv_data = utils::read_csv().unwrap();
-    println!("Size of the data list: {:?}", &csv_data.len());
+    // println!("Size of the data list: {:?}", &csv_data.len());
 
     // generate graph
     let graph_result = create_graph(csv_data).unwrap();
 
     // check is dag
     let is_dag_result:bool = is_dag(&graph_result);
-    println!("is_DAG: {}", is_dag_result);
 
     let page_rank = page_rank::calculate_pagerank(
         page_rank::create_transition_matrix(&graph_result),
@@ -175,9 +181,14 @@ fn main() {
         20,
     );
 
-    println!("Min PageRank: {}", page_rank.min_value);
-    println!("Max PageRank: {}", page_rank.max_value);
+    println!("is_dag: {}", is_dag_result);
+    println!("pr_max: {}", page_rank.max_value);
+    println!("pr_min: {}", page_rank.min_value);
+    
 
+    use std::io::{self, BufRead};
+    let stdin = io::stdin();
+    let _ = stdin.lock().lines().next();
 
     
 }

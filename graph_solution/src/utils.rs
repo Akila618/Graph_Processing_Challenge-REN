@@ -2,17 +2,17 @@ use std::{error::Error};
 
 //===================== read csv and return a values as string vector ============================
 pub fn read_csv() -> Result<Vec<Vec<i32>>, Box<dyn Error>> {
-    let _args: Vec<String> = std::env::args().collect();
+    let args: Vec<String> = std::env::args().collect();
     
-    // let input = match args.get(1) {
-    //     Some(path) => path,
-    //     None => {
-    //         println!("Error: Missing file path argument.");
-    //         return Err("Missing required file path argument".into());
-    //     }
-    // }; 
+    let input = match args.get(1) {
+        Some(path) => path,
+        None => {
+            println!("Error: Missing file path argument.");
+            return Err("Missing required file path argument".into());
+        }
+    }; 
 
-    let input = "../test_files/graph3.csv";
+    // let input = "../test_files/graph2.csv";
     
     let file = std::fs::File::open(input)?; 
 

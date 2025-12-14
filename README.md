@@ -1,9 +1,16 @@
 # Graph_Processing_Challenge-REN
 Coding challenge that implements a small utility to process a directed graph represented as an adjacency list and compute several structural and algorithmic properties from it.
 
-# The Challange
+# Running the program
+- There is a exe file created and included in the project.
+- Run the exe and enter the correct path to data file
+- You can compile and build the exe file into the main directory by running the build.ps1 file as well
+- To exit press enter
+- Additionally, the personal notes I prepared during the assignmet are also attached as a pdf file for the reference.
 
----
+NOTE: It might takes some time to process the graph and show the results (Ex: test1.csv)
+
+# The Challange
 
 This is a coding challenge for systems engineering candidates at Ren.
 
