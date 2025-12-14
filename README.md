@@ -3,9 +3,17 @@ Coding challenge that implements a small utility to process a directed graph rep
 
 # Running the program
 - There is a exe file created and included in the project.
-- Run the exe and enter the correct path to data file
+- Run the exe in below command
+```bash
+./graph_solution path/to/graph.txt
+
+Ex:
+.\graph_solution.exe .\test_files\graph1.csv
+.\graph_solution.exe .\test_files\graph2.csv
+.\graph_solution.exe .\test_files\graph3.csv
+
+```
 - You can compile and build the exe file into the main directory by running the build.ps1 file as well
-- To exit press enter
 - Additionally, the personal notes I prepared during the assignmet are also attached as a pdf file for the reference.
 
 NOTE: It might takes some time to process the graph and show the results (Ex: test1.csv)

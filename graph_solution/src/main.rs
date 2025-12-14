@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use csv::Error;
-use sprs::stack;
 mod utils;
 mod page_rank;
 
@@ -184,12 +183,6 @@ fn main() {
     println!("is_dag: {}", is_dag_result);
     println!("pr_max: {}", page_rank.max_value);
     println!("pr_min: {}", page_rank.min_value);
-    
-
-    use std::io::{self, BufRead};
-    let stdin = io::stdin();
-    let _ = stdin.lock().lines().next();
-
     
 }
 

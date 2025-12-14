@@ -24,7 +24,7 @@ pub fn create_transition_matrix(graph: &Graph) -> CsMat<f64>{
     if thee vector is not empty
     get the length of the vector
     calculate the probability as 1/length
-    update the m th row of the transition matrix by setting each element at the index of the vector to the probability
+    update the row of the transition matrix by setting each element at the index of the vector to the probability
     
     */
     
@@ -138,7 +138,7 @@ pub fn calculate_pagerank(tr_matrix: CsMat<f64>, damping_factor: f64, total_iter
     let mut new_pagerank_vector = vec![0.0; *size]; 
 
     for _counter in 0..total_iterations {
-        
+
         for i in 0..*size {
             new_pagerank_vector[i] = e_value;
         } 

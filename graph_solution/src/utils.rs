@@ -16,7 +16,7 @@ pub fn read_csv() -> Result<Vec<Vec<i32>>, Box<dyn Error>> {
     
     let file = std::fs::File::open(input)?; 
 
-    //[skip headers if there is one exists]
+    //skip headers
     let mut rdr = csv::ReaderBuilder::new().has_headers(false) .from_reader(file);
 
     let mut csv_results:Vec<Vec<i32>> = Vec::new();
@@ -31,7 +31,7 @@ pub fn read_csv() -> Result<Vec<Vec<i32>>, Box<dyn Error>> {
 
     }));
     
-    println!("retrieved csv successfully!");
+    // println!("retrieved csv successfully!");
     
     Ok(csv_results)
 }
