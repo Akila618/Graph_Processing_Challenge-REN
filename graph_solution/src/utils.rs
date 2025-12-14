@@ -11,7 +11,7 @@ pub fn read_csv() -> Result<Vec<Vec<i32>>, Box<dyn Error>> {
     //     }
     // }; 
 
-    let input = "../test_files/graph1.csv"; //hardcoded for testing
+    let input = "../test_files/graph3.csv"; //hardcoded for testing
     
     let file = std::fs::File::open(input)?; 
 

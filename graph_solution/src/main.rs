@@ -169,7 +169,6 @@ fn main() {
     let is_dag_result:bool = is_dag(&graph_result);
     println!("is_DAG: {}", is_dag_result);
 
-    page_rank::create_transition_matrix(&graph_result);
 
     
 

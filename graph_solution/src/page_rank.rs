@@ -1,12 +1,13 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, process::Output};
 
 use crate::Graph;
-use nalgebra::DMatrix;
+//use nalgebra_sparse::csr::CsrMatrix;
+use sprs::{CsMat, TriMat};
 
 
 
 //creating the trasition matrix for the graph
-pub fn create_transition_matrix(graph: &Graph) -> DMatrix<f64>{ 
+pub fn create_transition_matrix(graph: &Graph) -> CsMat<f64>{ 
 
     /*
     0 -> [1|2]
@@ -26,7 +27,8 @@ pub fn create_transition_matrix(graph: &Graph) -> DMatrix<f64>{
     */
     let size = graph.map.len();
 
-    let mut matrix = DMatrix::<f64>::zeros(size, size);
+    // The TriMat will temporarily hold all non-zero entries.
+    let mut trimat = TriMat::new((size, size));
 
     // a map to match the keys and idexes of the matrix ex: key of graph 10 -> index 0 of key_index_map
     let mut key_index_map: HashMap<i32, usize> = HashMap::new();
@@ -40,15 +42,17 @@ pub fn create_transition_matrix(graph: &Graph) -> DMatrix<f64>{
     
     for (selected_node, target_nodes) in &graph.map {
 
-        if target_nodes.is_empty() {
+        let out_degree = target_nodes.len() as f64;
+
+        if out_degree == 0.0 {
 
             let prob = 1.0 / size as f64;
             let mut counter = 0;
 
             while counter < size as i32{
-                let i = *key_index_map.get(selected_node).unwrap() as usize;
-                let j = counter as usize;
-                matrix[(i, j)] = prob;
+                let row = *key_index_map.get(selected_node).unwrap() as usize;
+                let col = counter as usize;
+                trimat.add_triplet(row, col, prob);
                 counter += 1;
             }
 
@@ -60,16 +64,21 @@ pub fn create_transition_matrix(graph: &Graph) -> DMatrix<f64>{
             let mut counter = 0;
 
             while counter < target_nodes.len() as i32{
+
                 let target_node = target_nodes[counter as usize];
-                let i = *key_index_map.get(selected_node).unwrap() as usize;
-                let j = *key_index_map.get(&target_node).unwrap() as usize;
-                matrix[(i, j)] = prob;
+                let row = *key_index_map.get(selected_node).unwrap() as usize;
+                let col = *key_index_map.get(&target_node).unwrap() as usize;
+
+                trimat.add_triplet(row, col, prob);
+
                 counter += 1;
             }
             
         }
     }
 
-    matrix
+    // create the csr matrix from the triplet matrix
+    trimat.to_csr()
 
 }
+
