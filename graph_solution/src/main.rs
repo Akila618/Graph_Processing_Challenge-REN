@@ -4,7 +4,6 @@ mod utils;
 mod page_rank;
 
 #[derive(Debug, Clone)]
-
 pub struct Graph{
     pub map: HashMap<i32, Vec<i32>>
 }
@@ -42,10 +41,11 @@ if node is visiting (1) return false : a cycle
 if node is non-visited (0) push it to stack
 */
 
-
+//=============================check cycles =======================================
 pub fn is_dag(graph: &Graph) -> bool {
     // 0 = unvisited, 1 = visiting, 2 = visited
     let mut node_state: HashMap<i32, i32> = HashMap::new();
+
     let mut stack: Vec<i32> = Vec::new();
     
     for &start_key in graph.map.keys() {
@@ -57,6 +57,7 @@ pub fn is_dag(graph: &Graph) -> bool {
             // Start DFS
             stack.push(start_key);
             while let Some(current_key) = stack.pop() {
+
                 let state = node_state.get(&current_key).unwrap_or(&0).clone();
                 
                 if state == 2 {
@@ -69,12 +70,13 @@ pub fn is_dag(graph: &Graph) -> bool {
                 }
                 
                 node_state.insert(current_key, 1);
+
                 stack.push(current_key);
                 
                 if let Some(neighbors) = graph.map.get(&current_key) {
+
                     for &neighbor in neighbors {
                         let neighbor_state = node_state.get(&neighbor).unwrap_or(&0).clone();
-                        
                         if neighbor_state == 1 {
                             return false; 
                         }
@@ -107,14 +109,16 @@ pub fn calculate_outdegree(graph: &Graph)-> i32{
     
 }
 
-//=============================create graph=======================================
+//=============================create graph========================================
 pub fn create_graph(csv_data:Vec<Vec<i32>>)-> Result<Graph, Error>{
 
     let mut graph_1 = Graph::new();
+
     let mut indegree_map:HashMap<i32, i32> = HashMap::new();
     
     // add graph information to the hashmap
     for edge in csv_data{
+
         let first_element = 0;
         let second_element  = 1;
 
@@ -151,7 +155,7 @@ pub fn create_graph(csv_data:Vec<Vec<i32>>)-> Result<Graph, Error>{
     Ok(graph_1)
 }
 
-//==============================main function=====================================
+//==============================main function======================================
 fn main() {
 
     //read the given csv file
@@ -160,17 +164,22 @@ fn main() {
 
     // generate graph
     let graph_result = create_graph(csv_data).unwrap();
-    // for (key,value) in &graph_result.map{
-    //     //print the correct key and value count
-    //     println!("key: {}, value_count: {}", key, value.len());
-    // }
 
     // check is dag
     let is_dag_result:bool = is_dag(&graph_result);
     println!("is_DAG: {}", is_dag_result);
 
+    let page_rank = page_rank::calculate_pagerank(
+        page_rank::create_transition_matrix(&graph_result),
+        0.85,
+        20,
+    );
 
-    
+    println!("Min PageRank: {}", page_rank.min_value);
+    println!("Max PageRank: {}", page_rank.max_value);
+
 
     
 }
+
+
