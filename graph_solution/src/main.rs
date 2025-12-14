@@ -1,17 +1,12 @@
 use std::collections::HashMap;
 use csv::Error;
 mod utils;
-mod graph;
+mod page_rank;
 
 #[derive(Debug, Clone)]
-pub struct Node{
-    pub flag: i32,
-    pub parent: Option<i32>,
-    pub node: i32,
-}
 
 pub struct Graph{
-    pub map: HashMap<i32, Vec<Node>>
+    pub map: HashMap<i32, Vec<i32>>
 }
 
 impl Graph {
@@ -61,38 +56,36 @@ pub fn is_dag(graph: &Graph) -> bool {
         else{
             // Start DFS
             stack.push(start_key);
-            
-            while let Some(current) = stack.pop() {
-                let current_state = *node_state.get(&current).unwrap_or(&0);
+            while let Some(current_key) = stack.pop() {
+                let state = node_state.get(&current_key).unwrap_or(&0).clone();
                 
-                if current_state == 2 {
+                if state == 2 {
+                    continue; 
+                }
+                
+                if state == 1 {
+                    node_state.insert(current_key, 2); 
                     continue;
                 }
                 
-                if current_state == 1 {
-                    node_state.insert(current, 2);
-                    continue;
-                }
+                node_state.insert(current_key, 1);
+                stack.push(current_key);
                 
-                node_state.insert(current, 1);
-                stack.push(current);
-                
-                // Check nodes of key
-                if let Some(neighbors) = graph.map.get(&current) {
-                    for neighbor in neighbors {
-                        let neighbor_node = neighbor.node;
-                        let neighbor_state = *node_state.get(&neighbor_node).unwrap_or(&0);
+                if let Some(neighbors) = graph.map.get(&current_key) {
+                    for &neighbor in neighbors {
+                        let neighbor_state = node_state.get(&neighbor).unwrap_or(&0).clone();
                         
                         if neighbor_state == 1 {
-                            return false;
+                            return false; 
                         }
                         
                         if neighbor_state == 0 {
-                            stack.push(neighbor_node);
+                            stack.push(neighbor); 
                         }
                     }
                 }
             }
+            
         }
         
        
@@ -141,22 +134,10 @@ pub fn create_graph(csv_data:Vec<Vec<i32>>)-> Result<Graph, Error>{
 
         //check if the key is present or create graph
         if !(graph_1.map.contains_key(&edge[first_element])){
-            graph_1.map.insert(key, vec![
-                Node{
-                    flag: 0,
-                    parent: None,
-                    node: value, 
-                }
-            ]);
+            graph_1.map.insert(key, vec![value]);
         }
         else {
-            graph_1.map.get_mut(&key).unwrap().push(
-                Node{
-                    flag: 0,
-                    parent: None,   
-                    node: value, 
-                }
-            );
+            graph_1.map.get_mut(&key).unwrap().push(value);
         }
     }
 
@@ -187,6 +168,8 @@ fn main() {
     // check is dag
     let is_dag_result:bool = is_dag(&graph_result);
     println!("is_DAG: {}", is_dag_result);
+
+    page_rank::create_transition_matrix(&graph_result);
 
     
 
